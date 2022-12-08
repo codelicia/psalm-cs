@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="Psalm">
+    <description>Format psalam type annotations.</description>
+
+    <rule name="Psalm">
+        <rule name="Psalm.ArrayShape" />
+    </rule>
+</ruleset>
