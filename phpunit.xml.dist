@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+        beStrictAboutChangesToGlobalState="true"
+        beStrictAboutOutputDuringTests="true"
+        bootstrap="./vendor/autoload.php"
+        colors="true"
+>
+    <testsuites>
+        <testsuite name="functional">
+            <directory suffix=".phpt">./tests/functional</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
+    <php>
+        <ini name="zend.assertions" value="1" />
+    </php>
+</phpunit>
