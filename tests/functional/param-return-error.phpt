@@ -12,7 +12,7 @@ E 1 / 1 (100%)
 
 
 
-FILE: ...s/malukenho/github.com/psalm-cs/tests/assets/return-type-off.php
+FILE: ...%s/tests/assets/return-type-off.php
 ----------------------------------------------------------------------
 FOUND 1 ERROR AFFECTING 1 LINE
 ----------------------------------------------------------------------
