@@ -3,10 +3,10 @@
   "description": "A CodeSniffer sniff to fix array shapes",
   "type": "phpcodesniffer-standard",
   "require-dev": {
-    "roave/security-advisories": "dev-latest"
-    ,
+    "phpunit/phpunit": "10.0.x-dev",
+    "roave/security-advisories": "dev-latest",
     "squizlabs/php_codesniffer": "^3.0@dev",
-    "phpunit/phpunit": "10.0.x-dev"
+    "staabm/annotate-pull-request-from-checkstyle": "^1.8.3"
   },
   "license": "MIT",
   "authors": [

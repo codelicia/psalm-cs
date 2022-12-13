@@ -1,0 +1,43 @@
+name: Run CI
+
+on: [push]
+
+jobs:
+  build:
+    name: CI
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions: ['8.1', '8.2']
+        dependencies: ['normal', 'authoritative']
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+
+    - name: Install dependencies
+      if: matrix.dependencies == 'normal'
+      run: composer install --prefer-dist
+      env:
+        COMPOSER_ROOT_VERSION: dev-master
+
+    - name: Install dependencies
+      if: matrix.dependencies == 'authoritative'
+      run: composer install --prefer-dist --classmap-authoritative
+      env:
+        COMPOSER_ROOT_VERSION: dev-master
+
+    - name: Run Phpunit
+      run: php -dzend.assertions=1 ./vendor/bin/phpunit
+
+    - name: Run PhpCs
+      run: ./vendor/bin/phpcs -q --report=checkstyle | ./vendor/bin/cs2pr
+
+    - name: Run Qodana
+      if: matrix.php-versions == '8.2' && matrix.dependencies == 'normal'
+      uses: JetBrains/qodana-action@v2022.3.0
