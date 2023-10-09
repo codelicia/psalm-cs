@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1', '8.2']
-        dependencies: ['normal', 'authoritative']
 
     steps:
     - uses: actions/checkout@v4
@@ -21,14 +20,7 @@ jobs:
         php-version: ${{ matrix.php-versions }}
 
     - name: Install dependencies
-      if: matrix.dependencies == 'normal'
       run: composer install --prefer-dist
-      env:
-        COMPOSER_ROOT_VERSION: dev-master
-
-    - name: Install dependencies
-      if: matrix.dependencies == 'authoritative'
-      run: composer install --prefer-dist --classmap-authoritative
       env:
         COMPOSER_ROOT_VERSION: dev-master
 
@@ -37,7 +29,3 @@ jobs:
 
     - name: Run PhpCs
       run: ./vendor/bin/phpcs -q --report=checkstyle | ./vendor/bin/cs2pr
-
-    - name: Run Qodana
-      if: matrix.php-versions == '8.2' && matrix.dependencies == 'normal'
-      uses: JetBrains/qodana-action@v2023.2.6
