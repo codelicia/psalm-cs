@@ -4,9 +4,9 @@ namespace Codelicia\Psalm\Sniffs;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use SlevomatCodingStandard\Helpers\Annotation\GenericAnnotation;
 use SlevomatCodingStandard\Helpers\AnnotationHelper;
 use SlevomatCodingStandard\Helpers\FixerHelper;
+use SlevomatCodingStandard\Helpers\Annotation;
 use function array_map;
 use function array_pop;
 use function array_shift;
@@ -34,30 +34,33 @@ final class ArrayShapeSniff implements Sniff
 
     public function process(File $phpcsFile, $stackPtr)
     {
-        /** @var GenericAnnotation[] $annotations */
-        $annotations = AnnotationHelper::getAnnotationsByName($phpcsFile, $stackPtr, '@psalm-return');
+        /** @var Annotation[] $annotations */
+        $annotations = AnnotationHelper::getAnnotations($phpcsFile, $stackPtr, '@psalm-return');
 
         foreach ($annotations as $annotation) {
+
             // @todo(malukenho): only format lines bigger then {@see self::LINE_LIMIT}
             // @todo(malukenho): can we get only the named groups
-            if ($annotation->getContent() === null) {
+            if ($annotation->getValue() === null) {
                 continue;
             }
 
-            if (! str_starts_with($annotation->getContent(), 'array{')) {
+            $value = (string) $annotation->getValue();
+
+            if (! str_starts_with($value, 'array{')) {
                 continue;
             }
 
-            if (strlen($annotation->getContent()) < self::LINE_LIMIT) {
+            if (strlen($value) < self::LINE_LIMIT) {
                 continue;
             }
 
-            if (str_contains($annotation->getContent(), "\n")) {
+            if (str_contains($value, "\n")) {
                 continue;
             }
 
             // @todo(malukenho): save extra data to append it later
-            $solo = preg_replace('/(\$[\w_0-9]+.+)/', '', $annotation->getContent());
+            $solo = preg_replace('/(\$[\w_0-9]+.+)/', '', $value);
 
             if (empty($solo)) {
                 continue;
@@ -69,7 +72,6 @@ final class ArrayShapeSniff implements Sniff
             $doc = '';
 
             // @todo(malukenho): can we do it with {@see array_reduce}?
-            $previousLiteral = '';
             $previousDivier = '';
             foreach ($matches as $match) {
                 $identation = str_repeat(' ', $indentLevel * $quantity);
@@ -106,7 +108,6 @@ final class ArrayShapeSniff implements Sniff
                     $doc .= ($previousDivier === ',' ?  '' : ',') . "\n" . $identation . $divider;
                 }
 
-                $previousLiteral = $match['literal'];
                 $previousDivier = $match['divider'];
             }
 
@@ -116,7 +117,7 @@ final class ArrayShapeSniff implements Sniff
             $printer = array_map(static fn (string $line) => '     * ' . $line, $lines);
 
             // Notify error
-            $current  = explode("\n", $annotation->getContent());
+            $current  = explode("\n", $value);
             $start = array_shift($current);
             $end = array_pop($current);
 
